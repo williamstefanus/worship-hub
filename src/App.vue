@@ -4,34 +4,11 @@
     <div class="bg-orb bg-orb--purple" aria-hidden="true"></div>
     <div class="bg-orb bg-orb--indigo" aria-hidden="true"></div>
 
-    <AppHeader v-model="searchQuery" />
-
-    <SongList
-      :songs="filteredSongs"
-      :searchQuery="searchQuery"
-    />
+    <RouterView />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import AppHeader from './components/AppHeader.vue'
-import SongList from './components/SongList.vue'
-import { mockSongs } from './data/songs.js'
-
-const searchQuery = ref('')
-
-const filteredSongs = computed(() => {
-  const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return mockSongs
-
-  return mockSongs.filter(song =>
-    song.title.toLowerCase().includes(q) ||
-    song.key.toLowerCase().includes(q) ||
-    song.bpm.toString().includes(q) ||
-    song.tags?.some(tag => tag.toLowerCase().includes(q))
-  )
-})
 </script>
 
 <style scoped>

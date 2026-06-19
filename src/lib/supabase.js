@@ -1,40 +1,73 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Replace these with your actual Supabase project credentials
-// You can find these in your Supabase project dashboard under Settings > API
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co'
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key'
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 /**
- * Supabase client instance
- * Initialize once and reuse throughout the application
+ * Supabase client instance — initialized once and reused throughout the app
  */
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-/**
- * Fetch all songs from the Supabase `songs` table
- * @returns {Promise<{data: Array, error: Object|null}>}
- */
-export async function fetchSongs() {
-  const { data, error } = await supabase
-    .from('songs')
-    .select('*')
-    .order('title', { ascending: true })
+// ─── Songs ───────────────────────────────────────────────────────────────────
 
-  return { data, error }
+/** Fetch all songs ordered by title */
+export async function fetchSongs() {
+  return supabase.from('songs').select('*').order('title', { ascending: true })
+}
+
+/** Insert a new song row */
+export async function insertSong(songData) {
+  return supabase.from('songs').insert([songData]).select().single()
+}
+
+/** Update an existing song row */
+export async function updateSong(id, updates) {
+  return supabase.from('songs').update(updates).eq('id', id).select().single()
+}
+
+/** Delete a song row */
+export async function deleteSong(id) {
+  return supabase.from('songs').delete().eq('id', id)
+}
+
+// ─── Storage ─────────────────────────────────────────────────────────────────
+
+/**
+ * Upload an audio file to the 'audio' bucket
+ * @param {File} file
+ * @param {string} songId - used as filename prefix for uniqueness
+ * @returns {Promise<{publicUrl: string|null, error: any}>}
+ */
+export async function uploadAudio(file, songId) {
+  const ext = file.name.split('.').pop()
+  const path = `${songId}-${Date.now()}.${ext}`
+
+  const { error: uploadError } = await supabase.storage
+    .from('audio')
+    .upload(path, file, { upsert: true })
+
+  if (uploadError) return { publicUrl: null, error: uploadError }
+
+  const { data } = supabase.storage.from('audio').getPublicUrl(path)
+  return { publicUrl: data.publicUrl, error: null }
 }
 
 /**
- * Search songs by title (case-insensitive partial match)
- * @param {string} query - Search term
- * @returns {Promise<{data: Array, error: Object|null}>}
+ * Upload a chord chart PDF to the 'chord-charts' bucket
+ * @param {File} file
+ * @param {string} songId
+ * @returns {Promise<{publicUrl: string|null, error: any}>}
  */
-export async function searchSongs(query) {
-  const { data, error } = await supabase
-    .from('songs')
-    .select('*')
-    .ilike('title', `%${query}%`)
-    .order('title', { ascending: true })
+export async function uploadChordChart(file, songId) {
+  const ext = file.name.split('.').pop()
+  const path = `${songId}-${Date.now()}.${ext}`
 
-  return { data, error }
+  const { error: uploadError } = await supabase.storage
+    .from('chord-charts')
+    .upload(path, file, { upsert: true })
+
+  if (uploadError) return { publicUrl: null, error: uploadError }
+
+  const { data } = supabase.storage.from('chord-charts').getPublicUrl(path)
+  return { publicUrl: data.publicUrl, error: null }
 }

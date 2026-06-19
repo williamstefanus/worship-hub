@@ -41,10 +41,18 @@
         </Transition>
       </div>
     </div>
+
+    <!-- Admin Link -->
+    <RouterLink to="/admin/login" class="admin-link" title="Admin Panel">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span class="admin-link__text">Admin</span>
+    </RouterLink>
   </header>
 </template>
 
 <script setup>
+import { RouterLink } from 'vue-router'
+
 defineProps({
   modelValue: {
     type: String,
@@ -218,5 +226,34 @@ defineEmits(['update:modelValue'])
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* ── Admin Link ──────────────────────────────────────────────── */
+.admin-link {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.45);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.admin-link:hover {
+  background: rgba(124,58,237,0.15);
+  border-color: rgba(124,58,237,0.4);
+  color: #c4b5fd;
+}
+
+.admin-link__text { display: none; }
+
+@media (min-width: 640px) {
+  .admin-link__text { display: inline; }
 }
 </style>
