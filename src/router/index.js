@@ -25,13 +25,18 @@ const router = createRouter({
   routes,
 })
 
-// Route guard — protect /admin from unauthenticated users
+// Route guard — protect /admin and prevent logged-in users from seeing login
 router.beforeEach(async (to) => {
-  if (to.meta.requiresAuth) {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
-      return { name: 'AdminLogin' }
-    }
+  const { data: { session } } = await supabase.auth.getSession()
+
+  // If route requires auth and there is no session, go to login
+  if (to.meta.requiresAuth && !session) {
+    return { name: 'AdminLogin' }
+  }
+
+  // If user has a session and tries to visit login page, send to admin dashboard
+  if (to.name === 'AdminLogin' && session) {
+    return { name: 'Admin' }
   }
 })
 
