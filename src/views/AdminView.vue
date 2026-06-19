@@ -971,10 +971,31 @@ async function handleSignOut() {
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 600px) {
-  .admin-header { padding: 0.75rem 1rem; }
+  .admin-header {
+    padding: 0.85rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .admin-header__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
   .admin-main { padding: 1rem; }
   .admin-section { padding: 1.25rem; }
   .form-grid { grid-template-columns: 1fr; }
   .field-group--full { grid-column: 1; }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .section-header__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .modal { padding: 1.5rem; }
 }
 </style>

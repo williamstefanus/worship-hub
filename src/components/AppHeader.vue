@@ -74,17 +74,38 @@ defineEmits(['update:modelValue'])
   background: var(--header-bg);
   border-bottom: 1px solid var(--card-border);
   padding: 14px 20px;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
   gap: 12px;
+}
+
+.header__brand {
+  grid-column: 1;
+}
+
+.admin-link {
+  grid-column: 2;
+  justify-self: end;
+}
+
+.search-wrapper {
+  grid-column: 1 / -1;
+  width: 100%;
 }
 
 @media (min-width: 640px) {
   .app-header {
+    display: flex;
     flex-direction: row;
-    align-items: center;
     justify-content: space-between;
     padding: 14px 32px;
+  }
+  .search-wrapper {
+    flex: 1;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: 16px;
   }
 }
 
@@ -133,17 +154,6 @@ defineEmits(['update:modelValue'])
 }
 
 /* ── Search Bar ──────────────────────────────────────────────── */
-.search-wrapper {
-  flex: 1;
-  max-width: 460px;
-}
-
-@media (min-width: 640px) {
-  .search-wrapper {
-    margin-left: auto;
-  }
-}
-
 .search-bar {
   position: relative;
   display: flex;
