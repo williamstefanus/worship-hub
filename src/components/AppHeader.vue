@@ -82,15 +82,18 @@ defineEmits(['update:modelValue'])
 
 .header__brand {
   grid-column: 1;
+  grid-row: 1;
 }
 
 .admin-link {
   grid-column: 2;
+  grid-row: 1;
   justify-self: end;
 }
 
 .search-wrapper {
   grid-column: 1 / -1;
+  grid-row: 2;
   width: 100%;
 }
 
@@ -261,9 +264,7 @@ defineEmits(['update:modelValue'])
   color: #c4b5fd;
 }
 
-.admin-link__text { display: none; }
-
-@media (min-width: 640px) {
-  .admin-link__text { display: inline; }
+.admin-link__text {
+  display: inline;
 }
 </style>
