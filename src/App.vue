@@ -1,0 +1,76 @@
+<template>
+  <div class="app-shell">
+    <!-- Ambient background orbs -->
+    <div class="bg-orb bg-orb--purple" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb--indigo" aria-hidden="true"></div>
+
+    <AppHeader v-model="searchQuery" />
+
+    <SongList
+      :songs="filteredSongs"
+      :searchQuery="searchQuery"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+import AppHeader from './components/AppHeader.vue'
+import SongList from './components/SongList.vue'
+import { mockSongs } from './data/songs.js'
+
+const searchQuery = ref('')
+
+const filteredSongs = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return mockSongs
+
+  return mockSongs.filter(song =>
+    song.title.toLowerCase().includes(q) ||
+    song.key.toLowerCase().includes(q) ||
+    song.bpm.toString().includes(q) ||
+    song.tags?.some(tag => tag.toLowerCase().includes(q))
+  )
+})
+</script>
+
+<style scoped>
+.app-shell {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ambient background glow orbs */
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.18;
+}
+
+.bg-orb--purple {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #7c3aed, transparent 70%);
+  top: -150px;
+  right: -150px;
+  animation: drift 8s ease-in-out infinite alternate;
+}
+
+.bg-orb--indigo {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #4f46e5, transparent 70%);
+  bottom: -100px;
+  left: -100px;
+  animation: drift 10s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(30px, 20px) scale(1.08); }
+}
+</style>

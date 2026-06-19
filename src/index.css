@@ -1,0 +1,126 @@
+/* ────────────────────────────────────────────────────────────────
+   Worship Hub — Global Design System
+   Font: Inter (body) + Outfit (display)
+   Theme: Dark mode — deep purple-indigo palette
+──────────────────────────────────────────────────────────────── */
+
+/* ── Import Fonts ────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap');
+
+/* ── Design Tokens ───────────────────────────────────────────── */
+:root {
+  /* Surface */
+  --bg-base:        #0a0812;
+  --bg-surface:     #0f0c1a;
+  --bg-surface-2:   #14102199;
+
+  /* Cards */
+  --card-bg:        rgba(20, 16, 40, 0.7);
+  --card-border:    rgba(139, 92, 246, 0.15);
+
+  /* Header */
+  --header-bg:      rgba(10, 8, 18, 0.82);
+
+  /* Accent — Violet/Indigo */
+  --accent:         #8b5cf6;
+  --accent-muted:   rgba(139, 92, 246, 0.4);
+  --accent-bg:      rgba(139, 92, 246, 0.12);
+
+  /* Text */
+  --text-primary:   #f1f0f8;
+  --text-secondary: #c4b5fd;
+  --text-muted:     #6b6787;
+
+  /* Radius */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+}
+
+/* ── Reset & Base ─────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background-color: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse 60% 50% at 70% 0%, rgba(100, 60, 200, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 10% 100%, rgba(70, 50, 180, 0.07) 0%, transparent 60%);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Typography ──────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+p {
+  line-height: 1.65;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ── Focus Visible ───────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.35);
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
+}
+
+/* ── Selection ───────────────────────────────────────────────── */
+::selection {
+  background: rgba(139, 92, 246, 0.35);
+  color: #fff;
+}
+
+/* ── Utility: Stacking context for App ───────────────────────── */
+#app {
+  position: relative;
+  z-index: 1;
+}
