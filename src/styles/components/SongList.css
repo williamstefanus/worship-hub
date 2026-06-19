@@ -1,0 +1,92 @@
+/* ── Page ────────────────────────────────────────────────────── */
+.song-list-page {
+  padding: 20px 16px 80px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .song-list-page {
+    padding: 28px 24px 80px;
+  }
+}
+
+/* ── Summary ─────────────────────────────────────────────────── */
+.list-summary {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  padding: 0 2px;
+}
+
+.list-summary strong {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* ── Songs Grid ──────────────────────────────────────────────── */
+.songs-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Empty State ─────────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.empty-state__icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.4;
+}
+
+.empty-state__title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin: 0 0 6px;
+}
+
+.empty-state__sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ── TransitionGroup Animations ──────────────────────────────── */
+.list-enter-active {
+  transition: all 0.3s ease;
+}
+.list-leave-active {
+  transition: all 0.2s ease;
+  position: absolute;
+  width: 100%;
+}
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+.list-move {
+  transition: transform 0.3s ease;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
