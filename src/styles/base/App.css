@@ -39,16 +39,16 @@
 
 /* ── Mobile Performance Overrides ────────────────────────────── */
 @media (max-width: 640px) {
-  /* Disable heavy animations on mobile */
+  /* Hide heavy ambient orbs on mobile entirely for 60fps scrolling */
   .bg-orb {
-    animation: none !important;
-    filter: blur(60px) !important; /* reduce blur radius */
+    display: none !important;
   }
 
-  /* Disable expensive backdrop filters on mobile */
+  /* Disable expensive backdrop filters globally on mobile */
   .app-header, 
   .sunday-banner__card, 
-  .glass {
+  .glass,
+  .app-footer {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
@@ -57,10 +57,19 @@
   .app-header {
     background: rgba(23, 23, 23, 0.98) !important; /* solid neutral-900 */
   }
+  .app-footer {
+    background: rgba(15, 15, 15, 1) !important;
+  }
   .sunday-banner__card {
     background: linear-gradient(135deg, rgba(212,168,64,0.15) 0%, rgba(212,168,64,0.08) 100%) !important;
   }
   .glass {
     background: #1a1a1a !important; /* solid fallback for glass cards */
+  }
+
+  /* Disable expensive continuous filter animations */
+  .header__logo {
+    animation: none !important;
+    filter: none !important;
   }
 }
