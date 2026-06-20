@@ -126,6 +126,7 @@
                 v-model="setlistLabel"
                 class="field-input"
                 type="text"
+                autocomplete="off"
                 placeholder="e.g. June 22 Morning Service"
               />
             </div>
@@ -152,7 +153,16 @@
               v-for="(song, idx) in pickedSongs"
               :key="song.id"
               class="setlist-song-item"
+              :class="{ 'drop-target': dragOverIdx === idx }"
+              draggable="true"
+              @dragstart="onDragStart($event, idx)"
+              @dragover="onDragOver($event, idx)"
+              @dragleave="onDragLeave($event, idx)"
+              @dragend="onDragEnd"
+              @drop="onDropSong($event, idx)"
+              style="cursor: grab;"
             >
+              <span class="setlist-song-item__drag" style="color: rgba(255,255,255,0.3); font-size: 1.2rem; margin-right: 0.25rem;">⠿</span>
               <span class="setlist-song-item__num">{{ idx + 1 }}</span>
               <span class="setlist-song-item__title">{{ song.title }}</span>
               <div class="setlist-song-item__meta">
@@ -178,6 +188,7 @@
                 v-model="pickerQuery"
                 class="picker-search"
                 type="text"
+                autocomplete="off"
                 placeholder="Search songs to add…"
               />
             </div>
@@ -322,7 +333,7 @@
           <form class="song-form" @submit.prevent="handleSaveArtist">
             <div class="field-group">
               <label class="field-label" for="a-name">Artist Name *</label>
-              <input id="a-name" v-model="artistForm.name" class="field-input" type="text" required placeholder="e.g. Hillsong" />
+              <input id="a-name" v-model="artistForm.name" class="field-input" type="text" autocomplete="off" required placeholder="e.g. Hillsong" />
             </div>
             
             <Transition name="fade">
@@ -352,7 +363,7 @@
               <!-- Title -->
               <div class="field-group">
                 <label class="field-label" for="e-title">Song Title *</label>
-                <input id="e-title" v-model="editForm.title" class="field-input" type="text" required />
+                <input id="e-title" v-model="editForm.title" class="field-input" type="text" autocomplete="off" required />
               </div>
               
               <!-- Artist -->
@@ -382,7 +393,7 @@
               <!-- Tags -->
               <div class="field-group field-group--full">
                 <label class="field-label" for="e-tags">Tags <span class="field-hint">(comma separated)</span></label>
-                <input id="e-tags" v-model="editForm.tags" class="field-input" type="text" />
+                <input id="e-tags" v-model="editForm.tags" class="field-input" type="text" autocomplete="off" />
               </div>
 
               <!-- Replace Audio -->
@@ -464,7 +475,7 @@
               <!-- Title -->
               <div class="field-group">
                 <label class="field-label" for="f-title">Song Title *</label>
-                <input id="f-title" v-model="form.title" class="field-input" type="text"
+                <input id="f-title" v-model="form.title" class="field-input" type="text" autocomplete="off"
                   placeholder="e.g. Way Maker" required />
               </div>
 
@@ -496,7 +507,7 @@
               <!-- Tags -->
               <div class="field-group field-group--full">
                 <label class="field-label" for="f-tags">Tags <span class="field-hint">(comma separated)</span></label>
-                <input id="f-tags" v-model="form.tags" class="field-input" type="text"
+                <input id="f-tags" v-model="form.tags" class="field-input" type="text" autocomplete="off"
                   placeholder="e.g. Contemporary, Hillsong, Worship" />
               </div>
 

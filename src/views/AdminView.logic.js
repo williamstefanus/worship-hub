@@ -120,6 +120,41 @@ export default {
     function removeSongFromSetlist(songId) {
       pickedSongIds.value = pickedSongIds.value.filter(id => id !== songId)
     }
+
+    const dragOverIdx = ref(null)
+    
+    function onDragStart(e, idx) {
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setData('text/plain', idx.toString())
+    }
+
+    function onDragOver(e, idx) {
+      e.preventDefault()
+      dragOverIdx.value = idx
+    }
+
+    function onDragLeave(e, idx) {
+      if (dragOverIdx.value === idx) {
+        dragOverIdx.value = null
+      }
+    }
+
+    function onDragEnd() {
+      dragOverIdx.value = null
+    }
+
+    function onDropSong(e, targetIdx) {
+      dragOverIdx.value = null
+      const sourceIdxStr = e.dataTransfer.getData('text/plain')
+      if (!sourceIdxStr) return
+      const sourceIdx = parseInt(sourceIdxStr, 10)
+      if (sourceIdx === targetIdx) return
+
+      const updatedList = [...pickedSongIds.value]
+      const [movedItem] = updatedList.splice(sourceIdx, 1)
+      updatedList.splice(targetIdx, 0, movedItem)
+      pickedSongIds.value = updatedList
+    }
     
     async function loadSetlist() {
       setlistLoading.value = true
@@ -486,6 +521,12 @@ export default {
       handleDelete,
       handleEditSong,
       handleSignOut,
+      onDragStart,
+      onDragOver,
+      onDragLeave,
+      onDragEnd,
+      onDropSong,
+      dragOverIdx,
     }
   }
 }

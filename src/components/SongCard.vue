@@ -1,33 +1,45 @@
 <template>
-  <article class="song-card" :class="{ expanded: isExpanded }" :id="`song-card-${song.id}`">
+  <article class="song-card" :class="{ expanded: isExpanded, 'song-card--banner': variant === 'banner' }" :id="`song-card-${song.id}`">
     <!-- Card Header -->
     <div class="song-card__header" @click="toggleExpand">
-      <div class="song-card__icon-wrap">
+      <span class="sunday-song-row__num" v-if="variant === 'banner'">{{ index + 1 }}</span>
+      <div class="song-card__icon-wrap" v-else>
         <span class="song-card__icon">🎵</span>
       </div>
 
       <div class="song-card__info">
-        <h2 class="song-card__title">{{ song.title }} <span class="song-card__artist" v-if="song.artists?.name">({{song.artists.name}})</span></h2>
+        <template v-if="variant === 'banner'">
+          <span class="sunday-song-row__title">
+            {{ song.title }}
+            <span class="song-card__artist" style="opacity: 0.7; font-weight: 500; font-size: 0.85em; margin-left: 0.25rem;" v-if="song.artists?.name">&mdash; {{song.artists.name}}</span>
+          </span>
+        </template>
+        <h2 class="song-card__title" v-else>
+          {{ song.title }} 
+          <span class="song-card__artist" v-if="song.artists?.name">({{song.artists.name}})</span>
+        </h2>
+        
         <div class="song-card__meta">
           <span class="badge badge--key" :title="`Key: ${song.key}`">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg v-if="variant !== 'banner'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>
             </svg>
             {{ song.key }}
           </span>
           <span class="badge badge--bpm" :title="`Tempo: ${song.bpm} BPM`">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg v-if="variant !== 'banner'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
             {{ song.bpm }} BPM
           </span>
         </div>
-        <div class="song-card__tags" v-if="song.tags?.length">
+        <div class="song-card__tags" v-if="song.tags?.length && variant !== 'banner'">
           <span v-for="tag in song.tags" :key="tag" class="tag">{{ tag }}</span>
         </div>
       </div>
 
       <button
+        v-if="variant !== 'banner'"
         class="song-card__toggle"
         :aria-expanded="isExpanded"
         :aria-label="isExpanded ? 'Collapse' : 'Expand'"
@@ -61,6 +73,7 @@
 
           <!-- Hidden native audio (no controls) -->
           <audio
+            v-if="song.audio_url"
             ref="audioEl"
             :src="song.audio_url"
             preload="metadata"
@@ -71,7 +84,7 @@
           />
 
           <!-- Custom player UI -->
-          <div class="audio-player-custom">
+          <div v-if="song.audio_url" class="audio-player-custom">
             <!-- Play / Pause -->
             <button class="ap-play-btn" @click="togglePlay" :aria-label="isPlaying ? 'Pause' : 'Play'">
               <svg v-if="!isPlaying" width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
@@ -133,6 +146,15 @@
                 </div>
               </Transition>
             </div>
+          </div>
+          
+          <div v-else class="audio-player-custom audio-player-custom--disabled">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.5; margin-right: 4px;">
+              <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+            No audio track available
           </div>
         </div>
 

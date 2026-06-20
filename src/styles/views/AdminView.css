@@ -648,10 +648,22 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.6rem 0.85rem;
-  background: rgba(212,168,64,0.07);
-  border: 1px solid rgba(212,168,64,0.2);
-  border-radius: 0.7rem;
-  transition: background 0.15s;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease, background 0.15s, border-color 0.15s;
+}
+
+.setlist-song-item:hover {
+  background: rgba(212, 168, 64, 0.08);
+  border-color: rgba(212, 168, 64, 0.25);
+}
+
+.setlist-song-item.drop-target {
+  border-top: 3px solid #d4a840;
+  transform: translateY(4px);
+  background: rgba(212, 168, 64, 0.1);
+  box-shadow: 0 -4px 12px rgba(212, 168, 64, 0.2);
 }
 
 .setlist-song-item__num {

@@ -6,6 +6,14 @@ export default {
       type: Object,
       required: true,
     },
+    variant: {
+      type: String,
+      default: 'default',
+    },
+    index: {
+      type: Number,
+      default: 0,
+    },
   },
   setup(props) {
     const isExpanded = ref(false)

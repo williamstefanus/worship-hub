@@ -1,10 +1,11 @@
 import { ref, computed, onMounted } from 'vue'
 import AppHeader from '../components/AppHeader.vue'
 import SongList from '../components/SongList.vue'
+import SongCard from '../components/SongCard.vue'
 import { fetchSongs, fetchSetlist } from '../lib/supabase.js'
 
 export default {
-  components: { AppHeader, SongList },
+  components: { AppHeader, SongList, SongCard },
   setup() {
     const searchQuery = ref('')
     const songs = ref([])

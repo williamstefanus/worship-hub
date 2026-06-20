@@ -21,19 +21,14 @@
             <span class="sunday-banner__date">{{ formatDate(setlist.sunday_date) }}</span>
           </div>
 
-          <div class="sunday-banner__songs">
-            <div
+          <div class="sunday-banner__songs" style="display: flex; flex-direction: column; gap: 8px;">
+            <SongCard
               v-for="(song, idx) in bannerSongs"
               :key="song.id"
-              class="sunday-song-row"
-            >
-              <span class="sunday-song-row__num">{{ idx + 1 }}</span>
-              <span class="sunday-song-row__title">{{ song.title }}</span>
-              <div class="sunday-song-row__meta">
-                <span class="badge badge--key">{{ song.key }}</span>
-                <span class="badge badge--bpm">{{ song.bpm }}</span>
-              </div>
-            </div>
+              :song="song"
+              variant="banner"
+              :index="idx"
+            />
           </div>
         </div>
       </section>
@@ -51,7 +46,12 @@
     </div>
 
     <!-- Song list -->
-    <SongList v-else :songs="filteredSongs" :searchQuery="searchQuery" />
+    <div v-else style="max-width: 760px; margin: 0 auto; padding: 0 16px;">
+      <h2 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; letter-spacing: -0.01em;">
+        <span style="opacity: 0.6; margin-right: 0.4rem;">🎶</span> Song Library
+      </h2>
+    </div>
+    <SongList v-if="!loading && !error" :songs="filteredSongs" :searchQuery="searchQuery" />
   </div>
 </template>
 
