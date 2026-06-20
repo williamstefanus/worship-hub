@@ -42,6 +42,38 @@ export async function fetchSetlist() {
     .select('*')
     .eq('id', 1)
     .maybeSingle()
+
+  if (data && data.sunday_date) {
+    const today = new Date()
+    const todayStr = today.getFullYear() + '-' + 
+      String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+      String(today.getDate()).padStart(2, '0')
+
+    if (data.sunday_date < todayStr) {
+      // Sunday has passed. Clear it in the background if authenticated.
+      supabase.auth.getSession().then(({ data: sessionData }) => {
+        if (sessionData?.session) {
+          clearSetlist()
+        }
+      })
+
+      // Present a cleared state to the frontend immediately
+      data.song_ids = []
+      data.label = null
+      data.sunday_date = null
+      data.verse = null
+      data.musicians = {
+        "Worship Leader": "",
+        "Singers": "",
+        "Keyboard": "",
+        "Guitar": "",
+        "Bass": "",
+        "Saxophone": "",
+        "Drum": ""
+      }
+    }
+  }
+
   return { data, error }
 }
 
