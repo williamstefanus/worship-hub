@@ -1,23 +1,40 @@
 <template>
   <div class="admin-wrapper">
 
-    <!-- ── Header ─────────────────────────────────────────────────── -->
+    <!-- ── Header ─────────────────────────────────────────────────────── -->
     <header class="admin-header glass">
       <div class="admin-header__brand">
-        <span class="logo-icon">🎵</span>
-        <span class="logo-text">Worship <span class="gradient-text">Hub</span></span>
+        <img src="../assets/logo-glow.png" alt="Worship Hub" class="app-logo-img" />
         <span class="admin-badge">Admin</span>
       </div>
       <div class="admin-header__actions">
-        <RouterLink to="/" class="btn-ghost">← Song Library</RouterLink>
+        <RouterLink to="/" class="btn-ghost">← Home</RouterLink>
         <button id="admin-signout" class="btn-ghost btn-danger" @click="handleSignOut">Sign Out</button>
       </div>
     </header>
 
     <main class="admin-main">
+      
+      <!-- ── Tabs ───────────────────────────────────────────────────────── -->
+      <div class="admin-tabs glass">
+        <button 
+          class="admin-tab" 
+          :class="{ 'admin-tab--active': activeTab === 'library' }" 
+          @click="activeTab = 'library'"
+        >
+          <span class="tab-icon">🎶</span> Song Library
+        </button>
+        <button 
+          class="admin-tab" 
+          :class="{ 'admin-tab--active': activeTab === 'setlist' }" 
+          @click="activeTab = 'setlist'"
+        >
+          <span class="tab-icon">🗓️</span> Sunday Setlist
+        </button>
+      </div>
 
-      <!-- ── Song Management Table ─────────────────────────────────── -->
-      <section class="admin-section glass">
+      <!-- ── Song Management Table ─────────────────────────────────────── -->
+      <section v-show="activeTab === 'library'" class="admin-section glass">
         <div class="section-header">
           <h2 class="section-title"><span class="section-icon">🎶</span> Song Library</h2>
           <div class="section-header__actions">
@@ -37,6 +54,7 @@
             <thead>
               <tr>
                 <th>Title</th>
+                <th>Artist</th>
                 <th>Key</th>
                 <th>BPM</th>
                 <th>Audio</th>
@@ -47,6 +65,7 @@
             <tbody>
               <tr v-for="song in songs" :key="song.id" class="song-row">
                 <td class="song-title">{{ song.title }}</td>
+                <td><span class="song-artist">{{ song.artist || '—' }}</span></td>
                 <td><span class="badge badge--key">{{ song.key }}</span></td>
                 <td><span class="badge badge--bpm">{{ song.bpm }}</span></td>
                 <td>
@@ -68,9 +87,153 @@
           </table>
         </div>
       </section>
+
+      <!-- ── Sunday Setlist ─────────────────────────────────────────────── -->
+      <section v-show="activeTab === 'setlist'" class="admin-section glass">
+        <div class="section-header">
+          <h2 class="section-title"><span class="section-icon">🗓️</span> Sunday Setlist</h2>
+        </div>
+
+        <!-- Status badge -->
+        <div v-if="setlistLoading" class="table-loading">Loading setlist…</div>
+        <template v-else>
+          <span
+            class="setlist-status"
+            :class="{
+              'setlist-status--active': setlistStatus === 'active',
+              'setlist-status--expired': setlistStatus === 'expired',
+              'setlist-status--empty': setlistStatus === 'empty',
+            }"
+          >
+            <span v-if="setlistStatus === 'active'">🟢 Active — {{ formatDate(setlistSundayDate) }}</span>
+            <span v-else-if="setlistStatus === 'expired'">🔴 Expired — {{ formatDate(setlistSundayDate) }}</span>
+            <span v-else>⚪ No setlist set</span>
+          </span>
+
+          <!-- Meta: label + sunday date -->
+          <div class="setlist-meta">
+            <div class="field-group">
+              <label class="field-label" for="sl-label">Service Label</label>
+              <input
+                id="sl-label"
+                v-model="setlistLabel"
+                class="field-input"
+                type="text"
+                placeholder="e.g. June 22 Morning Service"
+              />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="sl-date">Sunday Date</label>
+              <VueDatePicker 
+                v-model="setlistDate" 
+                :enable-time-picker="false" 
+                auto-apply 
+                format="yyyy-MM-dd" 
+                model-type="yyyy-MM-dd" 
+                dark
+                class="worship-datepicker"
+              />
+            </div>
+          </div>
+
+          <!-- Picked songs list -->
+          <div class="setlist-picked">
+            <div v-if="pickedSongs.length === 0" class="setlist-picked__empty">
+              No songs picked yet — search and select from the library below.
+            </div>
+            <div
+              v-for="(song, idx) in pickedSongs"
+              :key="song.id"
+              class="setlist-song-item"
+            >
+              <span class="setlist-song-item__num">{{ idx + 1 }}</span>
+              <span class="setlist-song-item__title">{{ song.title }}</span>
+              <div class="setlist-song-item__meta">
+                <span class="badge badge--key">{{ song.key }}</span>
+                <span class="badge badge--bpm">{{ song.bpm }}</span>
+              </div>
+              <button
+                class="setlist-song-item__remove"
+                title="Remove from setlist"
+                @click="removeSongFromSetlist(song.id)"
+              >✕</button>
+            </div>
+          </div>
+
+          <hr class="setlist-divider" />
+
+          <!-- Song picker -->
+          <div class="setlist-picker">
+            <div class="picker-search-wrap">
+              <span class="picker-search-icon">🔍</span>
+              <input
+                id="setlist-search"
+                v-model="pickerQuery"
+                class="picker-search"
+                type="text"
+                placeholder="Search songs to add…"
+              />
+            </div>
+
+            <div class="picker-list">
+              <div v-if="filteredPickerSongs.length === 0" class="picker-empty">
+                No songs found.
+              </div>
+              <div
+                v-for="song in filteredPickerSongs"
+                :key="song.id"
+                class="picker-item"
+                :class="{ 'picker-item--selected': isInSetlist(song.id) }"
+                @click="toggleSongInSetlist(song)"
+              >
+                <div class="picker-item__info">
+                  <div class="picker-item__check">{{ isInSetlist(song.id) ? '✓' : '' }}</div>
+                  <span class="picker-item__title">{{ song.title }} <span class="picker-item__artist" v-if="song.artist">({{song.artist}})</span></span>
+                </div>
+                <div class="picker-item__meta">
+                  <span class="badge badge--key">{{ song.key }}</span>
+                  <span class="badge badge--bpm">{{ song.bpm }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions footer -->
+          <div class="setlist-actions">
+            <span class="setlist-count">
+              <strong>{{ pickedSongs.length }}</strong> song{{ pickedSongs.length !== 1 ? 's' : '' }} selected
+            </span>
+            <div style="display:flex; gap:0.75rem; align-items:center;">
+              <button
+                class="btn-ghost btn-sm btn-danger"
+                :disabled="setlistSaving"
+                @click="handleClearSetlist"
+              >🗑 Clear Setlist</button>
+              <button
+                id="save-setlist"
+                class="btn-primary btn-sm-primary"
+                :disabled="setlistSaving || pickedSongs.length === 0"
+                @click="handleSaveSetlist"
+              >
+                <span v-if="setlistSaving" class="spinner"></span>
+                {{ setlistSaving ? 'Saving…' : '💾 Save Setlist' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Feedback -->
+          <Transition name="fade">
+            <div v-if="setlistError" class="alert alert--error" style="margin-top:1rem;">⚠️ {{ setlistError }}</div>
+          </Transition>
+          <Transition name="fade">
+            <div v-if="setlistSuccess" class="alert alert--success" style="margin-top:1rem;">✅ {{ setlistSuccess }}</div>
+          </Transition>
+        </template>
+      </section>
+
     </main>
 
-    <!-- ── Delete Confirm Modal ────────────────────────────────────── -->
+    <!-- ── Delete Confirm Modal ────────────────────────────────────────── -->
     <Transition name="modal">
       <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
         <div class="modal glass">
@@ -90,7 +253,7 @@
       </div>
     </Transition>
 
-    <!-- ── Edit Song Modal ──────────────────────────────────────────── -->
+    <!-- ── Edit Song Modal ──────────────────────────────────────────────── -->
     <Transition name="modal">
       <div v-if="editTarget" class="modal-overlay" @click.self="editTarget = null">
         <div class="modal modal--wide glass">
@@ -99,9 +262,15 @@
           <form class="song-form" @submit.prevent="handleEditSong">
             <div class="form-grid">
               <!-- Title -->
-              <div class="field-group field-group--full">
+              <div class="field-group">
                 <label class="field-label" for="e-title">Song Title *</label>
                 <input id="e-title" v-model="editForm.title" class="field-input" type="text" required />
+              </div>
+              
+              <!-- Artist -->
+              <div class="field-group">
+                <label class="field-label" for="e-artist">Artist</label>
+                <input id="e-artist" v-model="editForm.artist" class="field-input" type="text" placeholder="e.g. Hillsong" />
               </div>
 
               <!-- Key -->
@@ -193,7 +362,7 @@
       </div>
     </Transition>
 
-    <!-- ── Add Song Modal ────────────────────────────────────────────── -->
+    <!-- ── Add Song Modal ────────────────────────────────────────────────── -->
     <Transition name="modal">
       <div v-if="showAddModal" class="modal-overlay" @click.self="showAddModal = false">
         <div class="modal modal--wide glass">
@@ -202,10 +371,17 @@
           <form id="add-song-form" class="song-form" @submit.prevent="handleAddSong">
             <div class="form-grid">
               <!-- Title -->
-              <div class="field-group field-group--full">
+              <div class="field-group">
                 <label class="field-label" for="f-title">Song Title *</label>
                 <input id="f-title" v-model="form.title" class="field-input" type="text"
                   placeholder="e.g. Way Maker" required />
+              </div>
+
+              <!-- Artist -->
+              <div class="field-group">
+                <label class="field-label" for="f-artist">Artist</label>
+                <input id="f-artist" v-model="form.artist" class="field-input" type="text"
+                  placeholder="e.g. Hillsong" />
               </div>
 
               <!-- Key -->
@@ -311,221 +487,6 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { supabase, fetchSongs, insertSong, updateSong, deleteSong, uploadAudio, uploadChordChart } from '../lib/supabase.js'
-
-const router = useRouter()
-
-// ── Add modal state ────────────────────────────────────────────────────────────
-const showAddModal = ref(false)
-
-// ── Form state ──────────────────────────────────────────────────────────────
-const form = ref({ title: '', key: '', bpm: null, tags: '' })
-const audioFile = ref(null)
-const pdfFile = ref(null)
-const dragOver = ref({ audio: false, pdf: false })
-const progress = ref({ audio: 0, pdf: 0 })
-const submitting = ref(false)
-const formError = ref('')
-const formSuccess = ref('')
-
-function openAddModal() {
-  form.value = { title: '', key: '', bpm: null, tags: '' }
-  audioFile.value = null
-  pdfFile.value = null
-  progress.value = { audio: 0, pdf: 0 }
-  formError.value = ''
-  formSuccess.value = ''
-  showAddModal.value = true
-}
-
-// ── Table state ──────────────────────────────────────────────────────────────
-const songs = ref([])
-const loadingTable = ref(true)
-const deleteTarget = ref(null)
-const deleting = ref(false)
-
-// ── Edit state ───────────────────────────────────────────────────────────────
-const editTarget = ref(null)
-const editForm = ref({ title: '', key: '', bpm: null, tags: '' })
-const editAudioFile = ref(null)
-const editPdfFile = ref(null)
-const editDragOver = ref({ audio: false, pdf: false })
-const editSaving = ref(false)
-const editError = ref('')
-
-// ── Keys list ────────────────────────────────────────────────────────────────
-const musicalKeys = [
-  'C Major','C# Major',
-  'D Major','Db Major',
-  'Eb Major',
-  'E Major',
-  'F Major','F# Major',
-  'G Major','G# Major',
-  'Ab Major',
-  'A Major',
-  'Bb Major',
-  'B Major',
-]
-
-// ── Lifecycle ────────────────────────────────────────────────────────────────
-onMounted(loadSongs)
-
-async function loadSongs() {
-  loadingTable.value = true
-  const { data, error } = await fetchSongs()
-  if (!error) songs.value = data ?? []
-  loadingTable.value = false
-}
-
-// ── File pickers ─────────────────────────────────────────────────────────────
-function onPickAudio(e) { audioFile.value = e.target.files[0] ?? null }
-function onPickPdf(e)   { pdfFile.value  = e.target.files[0] ?? null }
-function onDropAudio(e) { audioFile.value = e.dataTransfer.files[0] ?? null }
-function onDropPdf(e)   { pdfFile.value  = e.dataTransfer.files[0] ?? null }
-
-// ── Submit ───────────────────────────────────────────────────────────────────
-async function handleAddSong() {
-  formError.value = ''
-  formSuccess.value = ''
-  submitting.value = true
-
-  try {
-    const slugId = `song-${Date.now()}`
-
-    // Upload audio (if selected)
-    let audio_url = null
-    if (audioFile.value) {
-      progress.value.audio = 30
-      const { publicUrl, error } = await uploadAudio(audioFile.value, slugId)
-      if (error) throw new Error('Audio upload failed: ' + error.message)
-      audio_url = publicUrl
-      progress.value.audio = 100
-    }
-
-    // Upload PDF (if selected)
-    let pdf_url = null
-    if (pdfFile.value) {
-      progress.value.pdf = 30
-      const { publicUrl, error } = await uploadChordChart(pdfFile.value, slugId)
-      if (error) throw new Error('PDF upload failed: ' + error.message)
-      pdf_url = publicUrl
-      progress.value.pdf = 100
-    }
-
-    // Parse tags
-    const tags = form.value.tags
-      ? form.value.tags.split(',').map(t => t.trim()).filter(Boolean)
-      : []
-
-    // Insert song row
-    const { error: insertError } = await insertSong({
-      title: form.value.title,
-      key: form.value.key,
-      bpm: form.value.bpm,
-      tags,
-      audio_url,
-      pdf_url,
-    })
-
-    if (insertError) throw new Error('Database insert failed: ' + insertError.message)
-
-    formSuccess.value = `"${form.value.title}" added successfully!`
-    form.value = { title: '', key: '', bpm: null, tags: '' }
-    audioFile.value = null
-    pdfFile.value = null
-    progress.value = { audio: 0, pdf: 0 }
-
-    await loadSongs()
-    // Close modal after a brief success flash
-    setTimeout(() => {
-      showAddModal.value = false
-      formSuccess.value = ''
-    }, 1200)
-  } catch (err) {
-    formError.value = err.message
-  } finally {
-    submitting.value = false
-  }
-}
-
-// ── Delete ───────────────────────────────────────────────────────────────────
-function confirmDelete(song) { deleteTarget.value = song }
-
-async function handleDelete() {
-  if (!deleteTarget.value) return
-  deleting.value = true
-  const { error } = await deleteSong(deleteTarget.value.id)
-  deleting.value = false
-  deleteTarget.value = null
-  if (!error) await loadSongs()
-}
-
-// ── Edit ─────────────────────────────────────────────────────────────────────
-function openEdit(song) {
-  editTarget.value = song
-  editForm.value = {
-    title: song.title,
-    key: song.key,
-    bpm: song.bpm,
-    tags: Array.isArray(song.tags) ? song.tags.join(', ') : (song.tags ?? ''),
-  }
-  editAudioFile.value = null
-  editPdfFile.value = null
-  editError.value = ''
-}
-
-async function handleEditSong() {
-  if (!editTarget.value) return
-  editError.value = ''
-  editSaving.value = true
-
-  try {
-    const slugId = `song-${editTarget.value.id}`
-    const updates = {}
-
-    // Upload new audio if provided
-    if (editAudioFile.value) {
-      const { publicUrl, error } = await uploadAudio(editAudioFile.value, slugId)
-      if (error) throw new Error('Audio upload failed: ' + error.message)
-      updates.audio_url = publicUrl
-    }
-
-    // Upload new PDF if provided
-    if (editPdfFile.value) {
-      const { publicUrl, error } = await uploadChordChart(editPdfFile.value, slugId)
-      if (error) throw new Error('PDF upload failed: ' + error.message)
-      updates.pdf_url = publicUrl
-    }
-
-    // Parse tags
-    updates.tags = editForm.value.tags
-      ? editForm.value.tags.split(',').map(t => t.trim()).filter(Boolean)
-      : []
-
-    updates.title = editForm.value.title
-    updates.key = editForm.value.key
-    updates.bpm = editForm.value.bpm
-
-    const { error: updateError } = await updateSong(editTarget.value.id, updates)
-    if (updateError) throw new Error('Update failed: ' + updateError.message)
-
-    editTarget.value = null
-    await loadSongs()
-  } catch (err) {
-    editError.value = err.message
-  } finally {
-    editSaving.value = false
-  }
-}
-
-// ── Auth ─────────────────────────────────────────────────────────────────────
-async function handleSignOut() {
-  await supabase.auth.signOut()
-  router.push('/admin/login')
-}
-</script>
+<script src="./AdminView.logic.js"></script>
 
 <style src="../styles/views/AdminView.css" scoped></style>

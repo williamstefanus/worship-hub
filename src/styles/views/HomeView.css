@@ -5,7 +5,7 @@
   justify-content: center;
   gap: 1rem;
   min-height: 40vh;
-  color: #a1a1a1;                 /* neutral-400 — was barely visible */
+  color: #a1a1a1;
   font-size: 0.95rem;
 }
 
@@ -16,12 +16,150 @@
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid #262626;      /* neutral-800 track */
-  border-top-color: #d4a840;      /* gold accent */
+  border: 3px solid #262626;
+  border-top-color: #d4a840;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ── Sunday Setlist Banner ───────────────────────────────────────────────── */
+.sunday-banner {
+  max-width: 960px;
+  margin: 0 auto 0;
+  padding: 2rem 1.5rem 2rem;
+}
+
+.sunday-banner__card {
+  background: linear-gradient(135deg, rgba(212,168,64,0.1) 0%, rgba(212,168,64,0.04) 100%);
+  border: 1px solid rgba(212,168,64,0.3);
+  border-radius: 1.25rem;
+  padding: 1.75rem 2rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px rgba(212,168,64,0.08);
+  animation: fadeSlideIn 0.5s ease both;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sunday-banner__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sunday-banner__title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sunday-banner__icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.sunday-banner__title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.sunday-banner__label {
+  font-size: 0.78rem;
+  color: #d4a840;
+  font-weight: 600;
+  margin-top: 0.1rem;
+}
+
+.sunday-banner__date {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.25rem 0.7rem;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.sunday-banner__songs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sunday-song-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 0.7rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.sunday-song-row:hover {
+  background: rgba(212,168,64,0.08);
+  border-color: rgba(212,168,64,0.2);
+}
+
+.sunday-song-row__num {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #d4a840;
+  min-width: 20px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.sunday-song-row__title {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f5f5f5;
+}
+
+.sunday-song-row__meta {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* Reuse badge styles (scoped will scope these) */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.badge--key {
+  background: rgba(212,168,64,0.15);
+  color: #e8c870;
+  border: 1px solid rgba(212,168,64,0.35);
+}
+
+.badge--bpm {
+  background: rgba(16,185,129,0.15);
+  color: #6ee7b7;
+  border: 1px solid rgba(16,185,129,0.3);
+}
+
+@media (max-width: 600px) {
+  .sunday-banner { padding: 1.5rem 1rem 1.5rem; }
+  .sunday-banner__card { padding: 1.25rem; }
+  .sunday-banner__header { flex-direction: column; align-items: flex-start; }
 }

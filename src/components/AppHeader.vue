@@ -2,11 +2,7 @@
   <header class="app-header" role="banner">
     <!-- Logo / Brand -->
     <RouterLink to="/" class="header__brand" aria-label="Worship Hub — go to song list">
-      <div class="header__logo" aria-hidden="true">✝️</div>
-      <div class="header__titles">
-        <span class="header__app-name">Worship Hub</span>
-        <span class="header__tagline">Rehearsal Center</span>
-      </div>
+      <img src="../assets/logo-glow.png" alt="Worship Hub" class="app-logo-img" />
     </RouterLink>
 
     <!-- Global Search Bar -->
@@ -50,17 +46,6 @@
   </header>
 </template>
 
-<script setup>
-import { RouterLink } from 'vue-router'
-
-defineProps({
-  modelValue: {
-    type: String,
-    default: '',
-  },
-})
-
-defineEmits(['update:modelValue'])
-</script>
+<script src="./AppHeader.logic.js"></script>
 
 <style src="../styles/components/AppHeader.css" scoped></style>

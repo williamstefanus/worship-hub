@@ -38,19 +38,6 @@
   </main>
 </template>
 
-<script setup>
-import SongCard from './SongCard.vue'
-
-defineProps({
-  songs: {
-    type: Array,
-    default: () => [],
-  },
-  searchQuery: {
-    type: String,
-    default: '',
-  },
-})
-</script>
+<script src="./SongList.logic.js"></script>
 
 <style src="../styles/components/SongList.css" scoped></style>

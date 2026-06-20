@@ -7,7 +7,7 @@
   -webkit-backdrop-filter: blur(20px);
   background: var(--header-bg);
   border-bottom: 1px solid var(--card-border);
-  padding: 14px 20px;
+  padding: 8px 20px;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
@@ -36,7 +36,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 14px 32px;
+    padding: 8px 32px;
   }
   .search-wrapper {
     flex: 1;
@@ -50,16 +50,19 @@
 .header__brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.65rem;
   text-decoration: none;
-  cursor: pointer;
-  color: inherit;
-  transition: opacity 0.2s;
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+  transition: transform 0.2s;
 }
 
-.header__brand:hover {
-  opacity: 0.85;
-  text-decoration: none;
+.header__brand:hover { transform: scale(1.02); }
+
+.app-logo-img {
+  height: 4.5rem;
+  width: auto;
+  object-fit: contain;
 }
 
 .header__logo {

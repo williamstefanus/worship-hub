@@ -30,6 +30,59 @@ export async function deleteSong(id) {
   return supabase.from('songs').delete().eq('id', id)
 }
 
+// ─── Sunday Setlist ───────────────────────────────────────────────────────────
+
+/**
+ * Fetch the single sunday_setlist row (id = 1).
+ * Returns { data, error } — data may be null if the row doesn't exist yet.
+ */
+export async function fetchSetlist() {
+  const { data, error } = await supabase
+    .from('sunday_setlist')
+    .select('*')
+    .eq('id', 1)
+    .maybeSingle()
+  return { data, error }
+}
+
+/**
+ * Upsert the sunday_setlist row (admin only).
+ * @param {string[]} songIds - ordered array of song UUIDs
+ * @param {string}   label   - e.g. "June 22 Service"
+ * @param {string}   sundayDate - ISO date string e.g. "2026-06-22"
+ */
+export async function updateSetlist(songIds, label, sundayDate) {
+  return supabase
+    .from('sunday_setlist')
+    .upsert({
+      id: 1,
+      song_ids: songIds,
+      label,
+      sunday_date: sundayDate,
+      updated_at: new Date().toISOString(),
+    })
+    .select()
+    .single()
+}
+
+/**
+ * Clear the sunday_setlist (reset to empty song list).
+ * Keeps the row but empties song_ids so the banner disappears.
+ */
+export async function clearSetlist() {
+  return supabase
+    .from('sunday_setlist')
+    .upsert({
+      id: 1,
+      song_ids: [],
+      label: 'Sunday Service',
+      sunday_date: new Date().toISOString().slice(0, 10),
+      updated_at: new Date().toISOString(),
+    })
+    .select()
+    .single()
+}
+
 // ─── Storage ─────────────────────────────────────────────────────────────────
 
 /**

@@ -2,6 +2,43 @@
   <div>
     <AppHeader v-model="searchQuery" />
 
+    <!-- ── Sunday Setlist Banner ────────────────────────────────────────── -->
+    <Transition name="fade">
+      <section
+        v-if="showBanner"
+        class="sunday-banner"
+        aria-label="This Sunday's setlist"
+      >
+        <div class="sunday-banner__card">
+          <div class="sunday-banner__header">
+            <div class="sunday-banner__title-group">
+              <span class="sunday-banner__icon">🗓️</span>
+              <div>
+                <h2 class="sunday-banner__title">This Sunday</h2>
+                <div class="sunday-banner__label">{{ setlist.label }}</div>
+              </div>
+            </div>
+            <span class="sunday-banner__date">{{ formatDate(setlist.sunday_date) }}</span>
+          </div>
+
+          <div class="sunday-banner__songs">
+            <div
+              v-for="(song, idx) in bannerSongs"
+              :key="song.id"
+              class="sunday-song-row"
+            >
+              <span class="sunday-song-row__num">{{ idx + 1 }}</span>
+              <span class="sunday-song-row__title">{{ song.title }}</span>
+              <div class="sunday-song-row__meta">
+                <span class="badge badge--key">{{ song.key }}</span>
+                <span class="badge badge--bpm">{{ song.bpm }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </Transition>
+
     <!-- Loading state -->
     <div v-if="loading" class="state-message">
       <div class="spinner"></div>
@@ -18,37 +55,6 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-import AppHeader from '../components/AppHeader.vue'
-import SongList from '../components/SongList.vue'
-import { fetchSongs } from '../lib/supabase.js'
-
-const searchQuery = ref('')
-const songs = ref([])
-const loading = ref(true)
-const error = ref(null)
-
-onMounted(async () => {
-  const { data, error: err } = await fetchSongs()
-  loading.value = false
-  if (err) {
-    error.value = err.message
-  } else {
-    songs.value = data ?? []
-  }
-})
-
-const filteredSongs = computed(() => {
-  const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return songs.value
-  return songs.value.filter(song =>
-    song.title.toLowerCase().includes(q) ||
-    song.key.toLowerCase().includes(q) ||
-    song.bpm.toString().includes(q) ||
-    song.tags?.some(tag => tag.toLowerCase().includes(q))
-  )
-})
-</script>
+<script src="./HomeView.logic.js"></script>
 
 <style src="../styles/views/HomeView.css" scoped></style>

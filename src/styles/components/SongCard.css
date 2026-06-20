@@ -285,6 +285,21 @@
 }
 
 /* Percentage readout */
+.song-card__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.song-card__artist {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  margin-left: 0.25rem;
+}
+
 .ap-vol-pct {
   font-size: 0.68rem;
   font-weight: 700;
