@@ -180,10 +180,10 @@
   align-items: center;
   gap: 7px;
   padding: 9px 18px;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(99, 102, 241, 0.2));
-  border: 1px solid rgba(139, 92, 246, 0.4);
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.25), rgba(249, 115, 22, 0.2));
+  border: 1px solid rgba(244, 63, 94, 0.4);
   border-radius: 10px;
-  color: #c4b5fd;
+  color: #fda4af;
   font-size: 0.82rem;
   font-weight: 600;
   text-decoration: none;
@@ -193,9 +193,22 @@
 }
 
 .btn--pdf:hover {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(99, 102, 241, 0.35));
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.4), rgba(249, 115, 22, 0.35));
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 6px 20px rgba(244, 63, 94, 0.3);
+}
+
+.btn--disabled {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.btn--disabled:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: none;
+  box-shadow: none;
 }
 
 /* ── Transition ──────────────────────────────────────────────── */
