@@ -31,6 +31,13 @@
         >
           <span class="tab-icon">🗓️</span> Sunday Setlist
         </button>
+        <button 
+          class="admin-tab" 
+          :class="{ 'admin-tab--active': activeTab === 'artists' }" 
+          @click="activeTab = 'artists'"
+        >
+          <span class="tab-icon">🎤</span> Artists
+        </button>
       </div>
 
       <!-- ── Song Management Table ─────────────────────────────────────── -->
@@ -65,7 +72,7 @@
             <tbody>
               <tr v-for="song in songs" :key="song.id" class="song-row">
                 <td class="song-title">{{ song.title }}</td>
-                <td><span class="song-artist">{{ song.artist || '—' }}</span></td>
+                <td><span class="song-artist">{{ song.artists?.name || '—' }}</span></td>
                 <td><span class="badge badge--key">{{ song.key }}</span></td>
                 <td><span class="badge badge--bpm">{{ song.bpm }}</span></td>
                 <td>
@@ -188,7 +195,7 @@
               >
                 <div class="picker-item__info">
                   <div class="picker-item__check">{{ isInSetlist(song.id) ? '✓' : '' }}</div>
-                  <span class="picker-item__title">{{ song.title }} <span class="picker-item__artist" v-if="song.artist">({{song.artist}})</span></span>
+                  <span class="picker-item__title">{{ song.title }} <span class="picker-item__artist" v-if="song.artists?.name">({{song.artists.name}})</span></span>
                 </div>
                 <div class="picker-item__meta">
                   <span class="badge badge--key">{{ song.key }}</span>
@@ -233,6 +240,40 @@
 
     </main>
 
+    <!-- ── Artists Tab ──────────────────────────────────────────────────────── -->
+    <section v-show="activeTab === 'artists'" class="admin-section glass" style="max-width: 960px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem;">
+      <div class="section-header">
+        <h2 class="section-title"><span class="section-icon">🎤</span> Manage Artists</h2>
+        <div class="section-header__actions">
+          <button class="btn-primary btn-sm-primary" @click="openAddArtistModal">➕ Add Artist</button>
+        </div>
+      </div>
+
+      <div v-if="loadingArtists" class="table-loading">Loading artists…</div>
+      <div v-else-if="artists.length === 0" class="table-empty">
+        No artists yet. Add one to use in your songs!
+      </div>
+      <div v-else class="table-wrapper">
+        <table class="song-table">
+          <thead>
+            <tr>
+              <th>Artist Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="artist in artists" :key="artist.id" class="song-row">
+              <td class="song-title">{{ artist.name }}</td>
+              <td class="actions-cell">
+                <button class="btn-icon btn-edit" title="Edit artist" @click="openEditArtist(artist)">✏️</button>
+                <button class="btn-icon btn-danger" title="Delete artist" @click="confirmDeleteArtist(artist)">🗑️</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- ── Delete Confirm Modal ────────────────────────────────────────── -->
     <Transition name="modal">
       <div v-if="deleteTarget" class="modal-overlay" @click.self="deleteTarget = null">
@@ -249,6 +290,53 @@
               {{ deleting ? 'Deleting…' : 'Delete' }}
             </button>
           </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- ── Delete Artist Confirm Modal ────────────────────────────────────── -->
+    <Transition name="modal">
+      <div v-if="deleteArtistTarget" class="modal-overlay" @click.self="deleteArtistTarget = null">
+        <div class="modal glass">
+          <h3 class="modal-title">Delete Artist?</h3>
+          <p class="modal-body">
+            Are you sure you want to delete <strong>{{ deleteArtistTarget?.name }}</strong>?
+            This will remove the artist from all assigned songs.
+          </p>
+          <div class="modal-actions">
+            <button class="btn-ghost" @click="deleteArtistTarget = null">Cancel</button>
+            <button class="btn-primary btn-danger" @click="handleDeleteArtist" :disabled="artistDeleting">
+              <span v-if="artistDeleting" class="spinner"></span>
+              {{ artistDeleting ? 'Deleting…' : 'Delete' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- ── Add/Edit Artist Modal ─────────────────────────────────────────── -->
+    <Transition name="modal">
+      <div v-if="showArtistModal" class="modal-overlay" @click.self="showArtistModal = false">
+        <div class="modal glass">
+          <h3 class="modal-title">{{ editArtistTarget ? '✏️ Edit Artist' : '➕ Add Artist' }}</h3>
+          <form class="song-form" @submit.prevent="handleSaveArtist">
+            <div class="field-group">
+              <label class="field-label" for="a-name">Artist Name *</label>
+              <input id="a-name" v-model="artistForm.name" class="field-input" type="text" required placeholder="e.g. Hillsong" />
+            </div>
+            
+            <Transition name="fade">
+              <div v-if="artistError" class="alert alert--error" style="margin-top:1rem;">⚠️ {{ artistError }}</div>
+            </Transition>
+
+            <div class="modal-actions modal-actions--form" style="margin-top: 2rem;">
+              <button type="button" class="btn-ghost" @click="showArtistModal = false">Cancel</button>
+              <button type="submit" class="btn-primary" :disabled="artistSubmitting">
+                <span v-if="artistSubmitting" class="spinner"></span>
+                {{ artistSubmitting ? 'Saving…' : 'Save Artist' }}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </Transition>
@@ -270,7 +358,10 @@
               <!-- Artist -->
               <div class="field-group">
                 <label class="field-label" for="e-artist">Artist</label>
-                <input id="e-artist" v-model="editForm.artist" class="field-input" type="text" placeholder="e.g. Hillsong" />
+                <select id="e-artist" v-model="editForm.artist_id" class="field-input">
+                  <option value="">No Artist</option>
+                  <option v-for="a in artists" :key="a.id" :value="a.id">{{ a.name }}</option>
+                </select>
               </div>
 
               <!-- Key -->
@@ -380,8 +471,10 @@
               <!-- Artist -->
               <div class="field-group">
                 <label class="field-label" for="f-artist">Artist</label>
-                <input id="f-artist" v-model="form.artist" class="field-input" type="text"
-                  placeholder="e.g. Hillsong" />
+                <select id="f-artist" v-model="form.artist_id" class="field-input">
+                  <option value="">No Artist</option>
+                  <option v-for="a in artists" :key="a.id" :value="a.id">{{ a.name }}</option>
+                </select>
               </div>
 
               <!-- Key -->

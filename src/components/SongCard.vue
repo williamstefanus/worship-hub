@@ -7,10 +7,7 @@
       </div>
 
       <div class="song-card__info">
-        <h2 class="song-card__title">
-          {{ song.title }}
-          <span v-if="song.artist" class="song-card__artist">&mdash; {{ song.artist }}</span>
-        </h2>
+        <h2 class="song-card__title">{{ song.title }} <span class="song-card__artist" v-if="song.artists?.name">({{song.artists.name}})</span></h2>
         <div class="song-card__meta">
           <span class="badge badge--key" :title="`Key: ${song.key}`">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

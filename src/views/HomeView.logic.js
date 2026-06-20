@@ -58,7 +58,7 @@ export default {
       if (!q) return songs.value
       return songs.value.filter(song =>
         song.title.toLowerCase().includes(q) ||
-        (song.artist && song.artist.toLowerCase().includes(q)) ||
+        (song.artists?.name && song.artists.name.toLowerCase().includes(q)) ||
         song.key.toLowerCase().includes(q) ||
         song.bpm.toString().includes(q) ||
         song.tags?.some(tag => tag.toLowerCase().includes(q))

@@ -6,6 +6,7 @@ import {
   supabase, fetchSongs, insertSong, updateSong, deleteSong,
   uploadAudio, uploadChordChart,
   fetchSetlist, updateSetlist, clearSetlist,
+  fetchArtists, insertArtist, updateArtist, deleteArtist
 } from "../lib/supabase.js"
 
 export default {
@@ -20,7 +21,7 @@ export default {
     const showAddModal = ref(false)
     
     // ── Form state ──────────────────────────────────────────────────────────────
-    const form = ref({ title: '', artist: '', key: '', bpm: null, tags: '' })
+    const form = ref({ title: '', artist_id: '', key: '', bpm: null, tags: '' })
     const audioFile = ref(null)
     const pdfFile = ref(null)
     const dragOver = ref({ audio: false, pdf: false })
@@ -30,7 +31,7 @@ export default {
     const formSuccess = ref('')
     
     function openAddModal() {
-      form.value = { title: '', artist: '', key: '', bpm: null, tags: '' }
+      form.value = { title: '', artist_id: '', key: '', bpm: null, tags: '' }
       audioFile.value = null
       pdfFile.value = null
       progress.value = { audio: 0, pdf: 0 }
@@ -47,7 +48,7 @@ export default {
     
     // ── Edit state ───────────────────────────────────────────────────────────────
     const editTarget = ref(null)
-    const editForm = ref({ title: '', artist: '', key: '', bpm: null, tags: '' })
+    const editForm = ref({ title: '', artist_id: '', key: '', bpm: null, tags: '' })
     const editAudioFile = ref(null)
     const editPdfFile = ref(null)
     const editDragOver = ref({ audio: false, pdf: false })
@@ -100,7 +101,7 @@ export default {
       return songs.value.filter(s =>
         s.title.toLowerCase().includes(q) ||
         s.key.toLowerCase().includes(q) ||
-        (s.artist && s.artist.toLowerCase().includes(q))
+        (s.artists?.name && s.artists.name.toLowerCase().includes(q))
       )
     })
     
@@ -188,6 +189,7 @@ export default {
     
     // ── Lifecycle ────────────────────────────────────────────────────────────────
     onMounted(async () => {
+      await loadArtists()
       await loadSongs()
       await loadSetlist()
     })
@@ -242,7 +244,7 @@ export default {
         // Insert song row
         const { error: insertError } = await insertSong({
           title: form.value.title,
-          artist: form.value.artist,
+          artist_id: form.value.artist_id || null,
           key: form.value.key,
           bpm: form.value.bpm,
           tags,
@@ -253,7 +255,7 @@ export default {
         if (insertError) throw new Error('Database insert failed: ' + insertError.message)
     
         formSuccess.value = `"${form.value.title}" added successfully!`
-        form.value = { title: '', artist: '', key: '', bpm: null, tags: '' }
+        form.value = { title: '', artist_id: '', key: '', bpm: null, tags: '' }
         audioFile.value = null
         pdfFile.value = null
         progress.value = { audio: 0, pdf: 0 }
@@ -288,7 +290,7 @@ export default {
       editTarget.value = song
       editForm.value = {
         title: song.title,
-        artist: song.artist ?? '',
+        artist_id: song.artist_id ?? '',
         key: song.key,
         bpm: song.bpm,
         tags: Array.isArray(song.tags) ? song.tags.join(', ') : (song.tags ?? ''),
@@ -327,7 +329,7 @@ export default {
           : []
     
         updates.title = editForm.value.title
-        updates.artist = editForm.value.artist
+        updates.artist_id = editForm.value.artist_id || null
         updates.key = editForm.value.key
         updates.bpm = editForm.value.bpm
     
@@ -348,7 +350,73 @@ export default {
       await supabase.auth.signOut()
       router.push('/admin/login')
     }
-    
+
+    // ── Artists Tab Logic ────────────────────────────────────────────────────────
+    const artists = ref([])
+    const loadingArtists = ref(true)
+    const showArtistModal = ref(false)
+    const artistForm = ref({ name: '' })
+    const artistSubmitting = ref(false)
+    const artistError = ref('')
+    const editArtistTarget = ref(null)
+    const deleteArtistTarget = ref(null)
+    const artistDeleting = ref(false)
+
+    async function loadArtists() {
+      loadingArtists.value = true
+      const { data } = await fetchArtists()
+      if (data) artists.value = data
+      loadingArtists.value = false
+    }
+
+    function openAddArtistModal() {
+      artistForm.value = { name: '' }
+      artistError.value = ''
+      editArtistTarget.value = null
+      showArtistModal.value = true
+    }
+
+    function openEditArtist(artist) {
+      editArtistTarget.value = artist
+      artistForm.value = { name: artist.name }
+      artistError.value = ''
+      showArtistModal.value = true
+    }
+
+    async function handleSaveArtist() {
+      artistError.value = ''
+      artistSubmitting.value = true
+      try {
+        if (editArtistTarget.value) {
+          const { error } = await updateArtist(editArtistTarget.value.id, { name: artistForm.value.name })
+          if (error) throw error
+        } else {
+          const { error } = await insertArtist({ name: artistForm.value.name })
+          if (error) throw error
+        }
+        showArtistModal.value = false
+        await loadArtists()
+        await loadSongs() // reload songs to get updated artist names
+      } catch (err) {
+        artistError.value = err.message
+      } finally {
+        artistSubmitting.value = false
+      }
+    }
+
+    function confirmDeleteArtist(artist) {
+      deleteArtistTarget.value = artist
+    }
+
+    async function handleDeleteArtist() {
+      if (!deleteArtistTarget.value) return
+      artistDeleting.value = true
+      await deleteArtist(deleteArtistTarget.value.id)
+      artistDeleting.value = false
+      deleteArtistTarget.value = null
+      await loadArtists()
+      await loadSongs()
+    }
 
     return {
       activeTab,
@@ -397,6 +465,27 @@ export default {
       songs,
       submitting,
       toggleSongInSetlist,
+      artists,
+      loadingArtists,
+      showArtistModal,
+      artistForm,
+      artistSubmitting,
+      artistError,
+      editArtistTarget,
+      deleteArtistTarget,
+      artistDeleting,
+      openAddArtistModal,
+      openEditArtist,
+      handleSaveArtist,
+      confirmDeleteArtist,
+      handleDeleteArtist,
+      handleSaveSetlist,
+      handleClearSetlist,
+      loadSongs,
+      handleAddSong,
+      handleDelete,
+      handleEditSong,
+      handleSignOut,
     }
   }
 }

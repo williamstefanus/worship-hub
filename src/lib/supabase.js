@@ -12,7 +12,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 /** Fetch all songs ordered by title */
 export async function fetchSongs() {
-  return supabase.from('songs').select('*').order('title', { ascending: true })
+  return supabase.from('songs').select('*, artists(name)').order('title', { ascending: true })
 }
 
 /** Insert a new song row */
@@ -123,4 +123,26 @@ export async function uploadChordChart(file, songId) {
 
   const { data } = supabase.storage.from('chord-charts').getPublicUrl(path)
   return { publicUrl: data.publicUrl, error: null }
+}
+
+// ─── Artists ─────────────────────────────────────────────────────────────────
+
+/** Fetch all artists ordered by name */
+export async function fetchArtists() {
+  return supabase.from('artists').select('*').order('name', { ascending: true })
+}
+
+/** Insert a new artist */
+export async function insertArtist(artistData) {
+  return supabase.from('artists').insert([artistData]).select().single()
+}
+
+/** Update an existing artist */
+export async function updateArtist(id, updates) {
+  return supabase.from('artists').update(updates).eq('id', id).select().single()
+}
+
+/** Delete an artist */
+export async function deleteArtist(id) {
+  return supabase.from('artists').delete().eq('id', id)
 }
