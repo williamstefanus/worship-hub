@@ -79,6 +79,16 @@ export default {
     const setlistError   = ref('')
     const setlistSuccess = ref('')
     const setlistSundayDate = ref(null) // ISO date from the DB
+    const setlistVerse   = ref('')
+    const setlistMusicians = ref({
+      "Worship Leader": "",
+      "Singers": "",
+      "Keyboard": "",
+      "Guitar": "",
+      "Bass": "",
+      "Saxophone": "",
+      "Drum": ""
+    })
     
     /** Derive setlist status from the stored sunday_date vs today */
     const setlistStatus = computed(() => {
@@ -86,6 +96,27 @@ export default {
       const today = new Date().toISOString().slice(0, 10)
       return setlistSundayDate.value >= today ? 'active' : 'expired'
     })
+    
+    // ── Verse Generator ──────────────────────────────────────────────────────────
+    const worshipVerses = [
+      "Psalm 150:6 - Let everything that has breath praise the LORD.",
+      "Psalm 100:2 - Worship the LORD with gladness; come before him with joyful songs.",
+      "Colossians 3:16 - Let the message of Christ dwell among you richly as you teach and admonish one another with all wisdom through psalms, hymns, and songs from the Spirit, singing to God with gratitude in your hearts.",
+      "John 4:24 - God is spirit, and his worshipers must worship in the Spirit and in truth.",
+      "Psalm 95:1 - Come, let us sing for joy to the LORD; let us shout aloud to the Rock of our salvation.",
+      "Romans 12:1 - Therefore, I urge you, brothers and sisters, in view of God's mercy, to offer your bodies as a living sacrifice, holy and pleasing to God—this is your true and proper worship.",
+      "Hebrews 12:28 - Therefore, since we are receiving a kingdom that cannot be shaken, let us be thankful, and so worship God acceptably with reverence and awe.",
+      "Psalm 29:2 - Ascribe to the LORD the glory due his name; worship the LORD in the splendor of his holiness.",
+      "1 Chronicles 16:23 - Sing to the LORD, all the earth; proclaim his salvation day after day.",
+      "Ephesians 5:19 - Speaking to one another with psalms, hymns, and songs from the Spirit. Sing and make music from your heart to the Lord.",
+      "Psalm 71:23 - My lips will shout for joy when I sing praise to you—I whom you have delivered.",
+      "Isaiah 12:5 - Sing to the LORD, for he has done glorious things; let this be known to all the world."
+    ];
+
+    function generateRandomVerse() {
+      const randomIndex = Math.floor(Math.random() * worshipVerses.length);
+      setlistVerse.value = worshipVerses[randomIndex];
+    }
     
     /** Songs in the setlist, in order */
     const pickedSongs = computed(() =>
@@ -163,7 +194,11 @@ export default {
         setlistLabel.value       = data.label ?? 'Sunday Service'
         setlistDate.value        = data.sunday_date ?? nextSundayISO()
         setlistSundayDate.value  = data.sunday_date ?? null
+        setlistVerse.value       = data.verse ?? ''
         pickedSongIds.value      = data.song_ids ?? []
+        if (data.musicians) {
+          setlistMusicians.value = { ...setlistMusicians.value, ...data.musicians }
+        }
       }
       setlistLoading.value = false
     }
@@ -176,6 +211,8 @@ export default {
         pickedSongIds.value,
         setlistLabel.value,
         setlistDate.value,
+        setlistMusicians.value,
+        setlistVerse.value
       )
       setlistSaving.value = false
       if (error) {
@@ -200,6 +237,16 @@ export default {
         setlistLabel.value      = 'Sunday Service'
         setlistDate.value       = nextSundayISO()
         setlistSundayDate.value = null
+        setlistVerse.value      = ''
+        setlistMusicians.value = {
+          "Worship Leader": "",
+          "Singers": "",
+          "Keyboard": "",
+          "Guitar": "",
+          "Bass": "",
+          "Saxophone": "",
+          "Drum": ""
+        }
         setlistSuccess.value    = 'Setlist cleared.'
         setTimeout(() => { setlistSuccess.value = '' }, 2000)
       }
@@ -496,6 +543,8 @@ export default {
       setlistStatus,
       setlistSuccess,
       setlistSundayDate,
+      setlistMusicians,
+      setlistVerse,
       showAddModal,
       songs,
       submitting,
@@ -516,6 +565,7 @@ export default {
       handleDeleteArtist,
       handleSaveSetlist,
       handleClearSetlist,
+      generateRandomVerse,
       loadSongs,
       handleAddSong,
       handleDelete,

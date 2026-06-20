@@ -28,6 +28,11 @@ export default {
         .filter(Boolean)
     })
 
+    const hasMusicians = computed(() => {
+      if (!setlist.value?.musicians) return false
+      return Object.values(setlist.value.musicians).some(val => typeof val === 'string' && val.trim().length > 0)
+    })
+
     function formatDate(isoDate) {
       if (!isoDate) return ''
       return new Date(isoDate + 'T00:00:00').toLocaleDateString('en-US', {
@@ -74,6 +79,7 @@ export default {
       setlist,
       showBanner,
       bannerSongs,
+      hasMusicians,
       formatDate,
       filteredSongs
     }

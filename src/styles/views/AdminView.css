@@ -43,7 +43,7 @@
 .admin-header__actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 8px;
 }
 
 .admin-main {
@@ -106,7 +106,7 @@
 }
 
 .admin-section {
-  padding: 2rem;
+  padding: 18px 20px;
 }
 
 .section-header {
@@ -125,8 +125,11 @@
 .btn-sm-primary {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  height: 40px;
+  box-sizing: border-box;
   gap: 0.35rem;
-  padding: 0.45rem 1rem;
+  padding: 0 1rem;
   border-radius: 0.6rem;
   border: none;
   background: linear-gradient(135deg, #d4a840, #b8922e);
@@ -317,19 +320,25 @@
 .btn-primary.btn-danger { background: linear-gradient(135deg, #dc2626, #b91c1c); }
 
 .btn-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  box-sizing: border-box;
   background: none;
   border: 1px solid rgba(255,255,255,0.15);
   color: rgba(255,255,255,0.6);
-  padding: 0.5rem 1rem;
+  padding: 0 1rem;
   border-radius: 0.6rem;
   font-size: 0.85rem;
   cursor: pointer;
   text-decoration: none;
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
+.btn-borderless { border: none !important; }
 .btn-ghost:hover { background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.3); }
 .btn-ghost.btn-danger:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: #fca5a5; }
-.btn-ghost.btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+.btn-ghost.btn-sm { padding: 0 0.75rem; height: 32px; font-size: 0.8rem; }
 
 .btn-icon {
   background: none;
@@ -393,7 +402,7 @@
 .status { font-size: 1rem; }
 .status--missing { color: rgba(255,255,255,0.2); }
 
-.actions-cell { white-space: nowrap; }
+.actions-cell { white-space: nowrap; text-align: right; }
 
 .table-loading,
 .table-empty {
@@ -752,4 +761,110 @@
 @media (max-width: 600px) {
   .setlist-meta { grid-template-columns: 1fr; }
   .setlist-actions { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── Volunteers Section ────────────────────────────────────── */
+.volunteers-section {
+  margin-top: 1.75rem;
+}
+
+.volunteers-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.volunteers-header__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #d4a840;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.volunteers-header__icon {
+  font-size: 1rem;
+}
+
+.volunteers-header__hint {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  margin: 0;
+}
+
+.volunteers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.volunteer-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 0.75rem 0.85rem;
+  transition: border-color 0.15s;
+}
+
+.volunteer-card:hover {
+  border-color: rgba(212,168,64,0.3);
+}
+
+.volunteer-card--lead {
+  background: rgba(212,168,64,0.06);
+  border-color: rgba(212,168,64,0.18);
+}
+
+.volunteer-card--lead:hover {
+  border-color: rgba(212,168,64,0.4);
+}
+
+.volunteer-card__label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.volunteer-card--lead .volunteer-card__label {
+  color: #d4a840;
+}
+
+.volunteer-card__icon {
+  font-size: 0.9rem;
+}
+
+.volunteer-card__input {
+  width: 100%;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  padding: 0.4rem 0.55rem;
+  font-size: 0.85rem;
+  color: #f5f5f5;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+
+.volunteer-card__input::placeholder {
+  color: rgba(255,255,255,0.2);
+}
+
+.volunteer-card__input:focus {
+  border-color: rgba(212,168,64,0.5);
+  box-shadow: 0 0 0 3px rgba(212,168,64,0.1);
 }

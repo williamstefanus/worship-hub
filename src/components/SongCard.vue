@@ -14,49 +14,39 @@
             <span class="song-card__artist" style="opacity: 0.7; font-weight: 500; font-size: 0.85em; margin-left: 0.25rem;" v-if="song.artists?.name">&mdash; {{song.artists.name}}</span>
           </span>
         </template>
-        <h2 class="song-card__title" v-else>
-          {{ song.title }} 
-          <span class="song-card__artist" v-if="song.artists?.name">({{song.artists.name}})</span>
-        </h2>
-        
-        <div class="song-card__meta">
-          <span class="badge badge--key" :title="`Key: ${song.key}`">
-            <svg v-if="variant !== 'banner'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>
-            </svg>
-            {{ song.key }}
-          </span>
-          <span class="badge badge--bpm" :title="`Tempo: ${song.bpm} BPM`">
-            <svg v-if="variant !== 'banner'" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-            </svg>
-            {{ song.bpm }} BPM
-          </span>
-        </div>
-        <div class="song-card__tags" v-if="song.tags?.length && variant !== 'banner'">
-          <span v-for="tag in song.tags" :key="tag" class="tag">{{ tag }}</span>
+        <template v-else>
+          <div class="song-card__title-row">
+            <div class="song-card__title-col">
+              <h2 class="song-card__title">{{ song.title }}</h2>
+              <span class="song-card__artist" v-if="song.artists?.name">{{ song.artists.name }}</span>
+            </div>
+            <div class="song-card__meta">
+              <span class="badge badge--key" :title="`Key: ${song.key}`">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>
+                </svg>
+                {{ song.key }}
+              </span>
+              <span class="badge badge--bpm" :title="`Tempo: ${song.bpm} BPM`">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                {{ song.bpm }} BPM
+              </span>
+            </div>
+          </div>
+          <div class="song-card__tags" v-if="song.tags?.length">
+            <span v-for="tag in song.tags" :key="tag" class="tag">{{ tag }}</span>
+          </div>
+        </template>
+
+        <!-- Banner: keep badges inline on same row (handled by CSS) -->
+        <div class="song-card__meta" v-if="variant === 'banner'">
+          <span class="badge badge--key">{{ song.key }}</span>
+          <span class="badge badge--bpm">{{ song.bpm }} BPM</span>
         </div>
       </div>
-
-      <button
-        v-if="variant !== 'banner'"
-        class="song-card__toggle"
-        :aria-expanded="isExpanded"
-        :aria-label="isExpanded ? 'Collapse' : 'Expand'"
-        @click.stop="toggleExpand"
-      >
-        <svg
-          class="chevron"
-          :class="{ rotated: isExpanded }"
-          width="18" height="18" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" stroke-width="2.5"
-          stroke-linecap="round" stroke-linejoin="round"
-        >
-          <polyline points="6 9 12 15 18 9"/>
-        </svg>
-      </button>
     </div>
-
     <!-- Expandable Media Section -->
     <Transition name="slide-fade">
       <div v-if="isExpanded" class="song-card__body">

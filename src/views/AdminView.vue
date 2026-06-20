@@ -45,8 +45,8 @@
         <div class="section-header">
           <h2 class="section-title"><span class="section-icon">🎶</span> Song Library</h2>
           <div class="section-header__actions">
+            <button class="btn-ghost btn-borderless" style="font-size: 0.82rem;" @click="loadSongs">↻ Refresh</button>
             <button id="open-add-song" class="btn-primary btn-sm-primary" @click="openAddModal">➕ Add Song</button>
-            <button class="btn-ghost btn-sm" @click="loadSongs">↻ Refresh</button>
           </div>
         </div>
 
@@ -117,10 +117,10 @@
             <span v-else>⚪ No setlist set</span>
           </span>
 
-          <!-- Meta: label + sunday date -->
+          <!-- Meta: label + sunday date + verse -->
           <div class="setlist-meta">
             <div class="field-group">
-              <label class="field-label" for="sl-label">Service Label</label>
+              <label class="field-label" for="sl-label">Description</label>
               <input
                 id="sl-label"
                 v-model="setlistLabel"
@@ -142,7 +142,86 @@
                 class="worship-datepicker"
               />
             </div>
+            <div class="field-group" style="grid-column: 1 / -1;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                <label class="field-label" for="sl-verse" style="margin-bottom: 0;">Verse of the Week</label>
+                <button class="btn-ghost btn-sm" @click="generateRandomVerse" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">✨ Auto-generate</button>
+              </div>
+              <input
+                id="sl-verse"
+                v-model="setlistVerse"
+                class="field-input"
+                type="text"
+                autocomplete="off"
+                placeholder="e.g. Psalm 150:6 - Let everything that has breath praise the LORD."
+              />
+            </div>
           </div>
+
+
+          <!-- Volunteers Section -->
+          <div class="volunteers-section">
+            <div class="volunteers-header">
+              <div class="volunteers-header__title">
+                <span class="volunteers-header__icon">👥</span>
+                <span>Volunteers</span>
+              </div>
+              <p class="volunteers-header__hint">Separate multiple names with a comma</p>
+            </div>
+            <div class="volunteers-grid">
+              <div class="volunteer-card">
+                <div class="volunteer-card__label">
+                  <span class="volunteer-card__icon">🎤</span>
+                  <span>Worship Leader</span>
+                </div>
+                <input class="volunteer-card__input" type="text" autocomplete="off" v-model="setlistMusicians['Worship Leader']" placeholder="e.g. Alice" />
+              </div>
+              <div class="volunteer-card">
+                <div class="volunteer-card__label">
+                  <span class="volunteer-card__icon">🎤</span>
+                  <span>Singers</span>
+                </div>
+                <input class="volunteer-card__input" type="text" autocomplete="off" v-model="setlistMusicians['Singers']" placeholder="e.g. John, Sarah" />
+              </div>
+              <div class="volunteer-card">
+                <div class="volunteer-card__label">
+                  <span class="volunteer-card__icon">🎹</span>
+                  <span>Keyboard</span>
+                </div>
+                <input class="volunteer-card__input" type="text" autocomplete="off" v-model="setlistMusicians['Keyboard']" placeholder="e.g. David" />
+              </div>
+              <div class="volunteer-card">
+                <div class="volunteer-card__label">
+                  <span class="volunteer-card__icon">🎸</span>
+                  <span>Guitar</span>
+                </div>
+                <input class="volunteer-card__input" type="text" autocomplete="off" v-model="setlistMusicians['Guitar']" placeholder="e.g. Mike, Alex" />
+              </div>
+              <div class="volunteer-card">
+                <div class="volunteer-card__label">
+                  <span class="volunteer-card__icon">🎸</span>
+                  <span>Bass</span>
+                </div>
+                <input class="volunteer-card__input" type="text" autocomplete="off" v-model="setlistMusicians['Bass']" placeholder="e.g. Sam" />
+              </div>
+              <div class="volunteer-card">
+                <div class="volunteer-card__label">
+                  <span class="volunteer-card__icon">🎷</span>
+                  <span>Saxophone</span>
+                </div>
+                <input class="volunteer-card__input" type="text" autocomplete="off" v-model="setlistMusicians['Saxophone']" placeholder="e.g. Lisa" />
+              </div>
+              <div class="volunteer-card">
+                <div class="volunteer-card__label">
+                  <span class="volunteer-card__icon">🥁</span>
+                  <span>Drum</span>
+                </div>
+                <input class="volunteer-card__input" type="text" autocomplete="off" v-model="setlistMusicians['Drum']" placeholder="e.g. Chris" />
+              </div>
+            </div>
+          </div>
+
+          <hr class="setlist-divider" />
 
           <!-- Picked songs list -->
           <div class="setlist-picked">
@@ -249,10 +328,8 @@
         </template>
       </section>
 
-    </main>
-
     <!-- ── Artists Tab ──────────────────────────────────────────────────────── -->
-    <section v-show="activeTab === 'artists'" class="admin-section glass" style="max-width: 960px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem;">
+    <section v-show="activeTab === 'artists'" class="admin-section glass">
       <div class="section-header">
         <h2 class="section-title"><span class="section-icon">🎤</span> Manage Artists</h2>
         <div class="section-header__actions">
@@ -269,7 +346,7 @@
           <thead>
             <tr>
               <th>Artist Name</th>
-              <th>Actions</th>
+              <th class="actions-cell">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -284,6 +361,8 @@
         </table>
       </div>
     </section>
+
+  </main>
 
     <!-- ── Delete Confirm Modal ────────────────────────────────────────── -->
     <Transition name="modal">

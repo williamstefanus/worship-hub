@@ -1,18 +1,5 @@
 <template>
   <main class="song-list-page" id="main-content" role="main">
-    <!-- Results Summary -->
-    <div class="list-summary">
-      <span v-if="songs.length === 0 && searchQuery">
-        No results for "<strong>{{ searchQuery }}</strong>"
-      </span>
-      <span v-else-if="searchQuery">
-        {{ songs.length }} result{{ songs.length !== 1 ? 's' : '' }} for "<strong>{{ searchQuery }}</strong>"
-      </span>
-      <span v-else>
-        <strong>{{ songs.length }}</strong> songs in your library
-      </span>
-    </div>
-
     <!-- Song Cards Grid -->
     <TransitionGroup
       name="list"

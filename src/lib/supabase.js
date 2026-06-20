@@ -50,8 +50,9 @@ export async function fetchSetlist() {
  * @param {string[]} songIds - ordered array of song UUIDs
  * @param {string}   label   - e.g. "June 22 Service"
  * @param {string}   sundayDate - ISO date string e.g. "2026-06-22"
+ * @param {string}   verse - Bible verse
  */
-export async function updateSetlist(songIds, label, sundayDate) {
+export async function updateSetlist(songIds, label, sundayDate, musicians, verse) {
   return supabase
     .from('sunday_setlist')
     .upsert({
@@ -59,6 +60,8 @@ export async function updateSetlist(songIds, label, sundayDate) {
       song_ids: songIds,
       label,
       sunday_date: sundayDate,
+      musicians: musicians,
+      verse: verse,
       updated_at: new Date().toISOString(),
     })
     .select()
@@ -70,15 +73,26 @@ export async function updateSetlist(songIds, label, sundayDate) {
  * Keeps the row but empties song_ids so the banner disappears.
  */
 export async function clearSetlist() {
+  const emptyMusicians = {
+    "Worship Leader": "",
+    "Singers": "",
+    "Keyboard": "",
+    "Guitar": "",
+    "Bass": "",
+    "Saxophone": "",
+    "Drum": ""
+  };
   return supabase
     .from('sunday_setlist')
-    .upsert({
-      id: 1,
+    .update({
       song_ids: [],
-      label: 'Sunday Service',
-      sunday_date: new Date().toISOString().slice(0, 10),
+      label: null,
+      sunday_date: null,
+      musicians: emptyMusicians,
+      verse: null,
       updated_at: new Date().toISOString(),
     })
+    .eq('id', 1)
     .select()
     .single()
 }
