@@ -14,13 +14,13 @@
 /* ── Summary ─────────────────────────────────────────────────── */
 .list-summary {
   font-size: 0.82rem;
-  color: var(--text-muted);
+  color: #a1a1a1;                 /* neutral-400 */
   margin-bottom: 16px;
   padding: 0 2px;
 }
 
 .list-summary strong {
-  color: var(--text-secondary);
+  color: #e5e5e5;                 /* neutral-200 */
   font-weight: 600;
 }
 
@@ -51,13 +51,13 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: #e5e5e5;                 /* neutral-200 */
   margin: 0 0 6px;
 }
 
 .empty-state__sub {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: #a1a1a1;                 /* neutral-400 */
   margin: 0;
 }
 

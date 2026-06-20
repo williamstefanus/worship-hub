@@ -1,13 +1,13 @@
 <template>
   <header class="app-header" role="banner">
     <!-- Logo / Brand -->
-    <div class="header__brand">
-      <div class="header__logo" aria-hidden="true">🎶</div>
+    <RouterLink to="/" class="header__brand" aria-label="Worship Hub — go to song list">
+      <div class="header__logo" aria-hidden="true">✝️</div>
       <div class="header__titles">
         <span class="header__app-name">Worship Hub</span>
         <span class="header__tagline">Rehearsal Center</span>
       </div>
-    </div>
+    </RouterLink>
 
     <!-- Global Search Bar -->
     <div class="search-wrapper" role="search">

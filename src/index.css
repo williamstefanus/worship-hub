@@ -1,35 +1,36 @@
 /* ────────────────────────────────────────────────────────────────
    Worship Hub — Global Design System
    Font: Inter (body) + Outfit (display)
-   Theme: Dark mode — deep purple-indigo palette
+   Theme: IFGF PRAISE — Monochrome Black & White
 ──────────────────────────────────────────────────────────────── */
 
 /* ── Import Fonts ────────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap');
 
 /* ── Design Tokens ───────────────────────────────────────────── */
+/* Neutral palette: 50→#fafafa … 950→#0a0a0a                    */
 :root {
-  /* Surface */
-  --bg-base:        #0f172a;
-  --bg-surface:     #1e293b;
-  --bg-surface-2:   #1e293b99;
+  /* Surface — neutral 950 / 900 / 800 */
+  --bg-base:        #0a0a0a;   /* neutral-950 */
+  --bg-surface:     #171717;   /* neutral-900 */
+  --bg-surface-2:   #17171799;
 
-  /* Cards */
-  --card-bg:        rgba(30, 41, 59, 0.7);
-  --card-border:    rgba(244, 63, 94, 0.2);
+  /* Cards — neutral-900 tinted, border neutral-700 */
+  --card-bg:        rgba(23, 23, 23, 0.9);
+  --card-border:    rgba(64, 64, 64, 0.7);  /* neutral-700 @ 70% */
 
   /* Header */
-  --header-bg:      rgba(15, 23, 42, 0.82);
+  --header-bg:      rgba(10, 10, 10, 0.95);
 
-  /* Accent — Rose/Orange Sunrise */
-  --accent:         #f43f5e;
-  --accent-muted:   rgba(244, 63, 94, 0.4);
-  --accent-bg:      rgba(244, 63, 94, 0.12);
+  /* Accent — Warm Gold */
+  --accent:         #d4a840;
+  --accent-muted:   rgba(212, 168, 64, 0.45);
+  --accent-bg:      rgba(212, 168, 64, 0.12);
 
-  /* Text */
-  --text-primary:   #f8fafc;
-  --text-secondary: #fda4af;
-  --text-muted:     #94a3b8;
+  /* Text — high contrast from neutral palette */
+  --text-primary:   #fafafa;   /* neutral-50  */
+  --text-secondary: #e5e5e5;   /* neutral-200 */
+  --text-muted:     #a1a1a1;   /* neutral-400 (was #6b6b6b = neutral-600 — too dark!) */
 
   /* Radius */
   --radius-sm:   8px;
@@ -60,8 +61,8 @@ body {
   color: var(--text-primary);
   background-color: var(--bg-base);
   background-image:
-    radial-gradient(ellipse 60% 50% at 70% 0%, rgba(244, 63, 94, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 10% 100%, rgba(249, 115, 22, 0.07) 0%, transparent 60%);
+    radial-gradient(ellipse 60% 50% at 70% 0%, rgba(212, 168, 64, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 10% 100%, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -105,17 +106,17 @@ a:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.35);
+  background: rgba(212, 168, 64, 0.35);
   border-radius: 100px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.6);
+  background: rgba(212, 168, 64, 0.65);
 }
 
 /* ── Selection ───────────────────────────────────────────────── */
 ::selection {
-  background: rgba(139, 92, 246, 0.35);
+  background: rgba(212, 168, 64, 0.35);
   color: #fff;
 }
 
