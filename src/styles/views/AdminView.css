@@ -395,6 +395,7 @@
   border-radius: 99px;
   font-size: 0.75rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 .badge--key { background: rgba(212, 168, 64, 0.15); color: #e8c870; border: 1px solid rgba(212, 168, 64, 0.35); }
 .badge--bpm { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }

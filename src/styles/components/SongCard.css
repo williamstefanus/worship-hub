@@ -527,3 +527,28 @@
   opacity: 0;
   transform: translateY(-6px);
 }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .song-card__title-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .song-card__title-col {
+    min-width: 100%;
+  }
+  .song-card__title {
+    white-space: normal;
+    word-break: break-word;
+  }
+  
+  .song-card--banner .song-card__info {
+    flex-wrap: wrap;
+  }
+  .sunday-song-row__title {
+    min-width: 100%;
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
